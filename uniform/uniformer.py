@@ -32,5 +32,8 @@ def uniform(data_raw_dir: Path, data_uniformed_dir: Path):
             files = list(get_all_files(dir, True))
             asyncio.run(process_files_async(files, data_uniformed_dir, dir.name, uniform_file, "统一"))
         check_uniform(data_uniformed_dir)
+    except Exception as e:
+        tqdm.write(f"处理目录 {data_raw_dir} 时发生错误: {e}")
+        raise e
     finally:
         cleanup_word_app()

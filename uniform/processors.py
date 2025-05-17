@@ -1,9 +1,11 @@
 from PIL import Image
 import PyPDF2
 import textract
+from striprtf.striprtf import rtf_to_text
 from tqdm import tqdm
 from utils.file import FilePath, FileCategory, detect_encoding
 from utils.word import get_word_app, word_lock
+import sys
 from typing import List, Type
 
 class Processor:
@@ -97,26 +99,37 @@ class DOCProcessor(Processor):
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(text)
 
-class TxtProcessor(Processor):
-    """文本处理器"""
+class RTFProcessor(Processor):
+    """RTF处理器"""
     def __init__(self):
         super().__init__()
-        self.supported_types = {'txt'}
+        self.supported_types = {'rtf', 'txt'}  # 同时支持txt扩展名
         self.supported_categories = {}
 
     def process(self, input_path: FilePath, output_path: FilePath) -> None:
-        """处理文本文件"""
+        """处理RTF文件"""
         try:
             encoding = detect_encoding(input_path)
             with open(input_path, "r", encoding=encoding) as f:
-                text = f.read()
+                content = f.read()
+            
+            # 检查是否为RTF格式
+            if not content.strip().startswith('{\\rtf'):
+                # 如果不是RTF格式，直接复制内容
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+                return
+            
+            # 转换为纯文本
+            text_content = rtf_to_text(content)
+            
+            # 保存转换后的文本
             with open(output_path, "w", encoding="utf-8") as f:
-                f.write(text)
-        except UnicodeDecodeError:
-            tqdm.write(f"无法解码文件: {input_path}，检测到的编码: {encoding}")
+                f.write(text_content)
+                
         except Exception as e:
-            tqdm.write(f"处理文本文件 {input_path} 时发生错误: {e}")
-
+            tqdm.write(f"处理RTF文件 {input_path} 时发生错误: {e}")
+            raise e
 
 # 处理器类型列表
 PROCESSOR_TYPES: List[Type[Processor]] = [
@@ -124,7 +137,7 @@ PROCESSOR_TYPES: List[Type[Processor]] = [
     PDFProcessor,
     DOCXProcessor,
     DOCProcessor,
-    TxtProcessor
+    RTFProcessor
 ]
 
 def create_processor(file_path: FilePath) -> Processor:

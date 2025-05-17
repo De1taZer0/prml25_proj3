@@ -12,7 +12,7 @@ class FileCategory(Enum):
     def from_extension(cls, ext: str) -> 'FileCategory':
         if ext in {"png", "jpg", "jpeg"}:
             return cls.IMAGE
-        if ext in {"txt", "doc", "docx", "pdf"}:
+        if ext in {"txt", "doc", "docx", "pdf", "rtf"}:
             return cls.TEXT
         return cls.OTHER
 
