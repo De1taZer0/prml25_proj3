@@ -23,7 +23,7 @@ async def process_files_async(
         process_func: 处理函数
         desc: 进度条描述
     """
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=16) as executor:
         tasks = []
         for file in files:
             if not file.valid:

@@ -2,10 +2,15 @@
 *.docx
 
 data/
+features/
 
-__pycache__/
-
+.cursorignore
 .vscode/
 .venv/
+results/
 
 .env
+
+!src/**
+
+__pycache__/

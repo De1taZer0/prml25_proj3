@@ -47,8 +47,8 @@ def get_all_files(dir_path: Path, full_path: bool = False) -> Iterator[FilePath]
 
 def get_output_path(input_path: FilePath, data_processed_dir: Path) -> FilePath:
     """生成输出文件路径，只保留最上层和最下层目录"""
-    rel_path = input_path.relative_to(data_processed_dir.parent)
-    output_dir = data_processed_dir / rel_path.parts[1]
+    rel_path = input_path.relative_to(data_processed_dir.parent).parts[1]
+    output_dir = data_processed_dir / rel_path
     
     if input_path.is_image:
         output_name = "formula.png"
